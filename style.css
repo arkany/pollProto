@@ -92,3 +92,20 @@ span {
     margin-left: auto;
     padding-left: 8px;
 }
+
+.toggle-button {
+    margin-top: 16px;
+    padding: 8px 16px;
+    border: 1px solid #000;
+    border-radius: 8px;
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-align: center;
+    max-width: 100px;
+}
+
+.toggle-button:hover {
+    background: #f0f0f0;
+    transform: translateY(-1px);
+}

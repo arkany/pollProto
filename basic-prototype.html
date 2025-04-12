@@ -12,21 +12,22 @@
     </div>
     <div id="poll-options">
         <button id="option-1">
-            <span class="option-text">Red</span>
+            <span>Red</span>
             <div class="voter-avatar-row"></div>
             <span id="option-1-count">0</span>
         </button>
         <button id="option-2">
-            <span class="option-text">Blue</span>
+            <span>Blue</span>
             <div class="voter-avatar-row"></div>
             <span id="option-2-count">0</span>
         </button>
         <button id="option-3">
-            <span class="option-text">Green</span>
+            <span>Green</span>
             <div class="voter-avatar-row"></div>
             <span id="option-3-count">0</span>
         </button>
     </div>
+    <button id="toggle-results" class="toggle-button">Toggle Results</button>
     <p>Thank you for voting!</p>
 </div>
 <script>
@@ -35,11 +36,13 @@
     let poll2 = 0;
     let poll3 = 0;
     let totalVoters = 0;
+    let showResults = false;
 
     // Get all poll buttons
     const option1 = document.getElementById('option-1');
     const option2 = document.getElementById('option-2');
     const option3 = document.getElementById('option-3');
+    const toggleResultsButton = document.getElementById('toggle-results');
 
     // Function to create a new avatar
     function createAvatar() {
@@ -54,23 +57,41 @@
         const totalVotes = poll1 + poll2 + poll3;
         if (totalVotes === 0) return;
 
-        // Calculate percentages with 2 decimal places for smoother transitions
-        const percent1 = Math.round((poll1 / totalVotes) * 10000) / 100;
-        const percent2 = Math.round((poll2 / totalVotes) * 10000) / 100;
-        const percent3 = Math.round((poll3 / totalVotes) * 10000) / 100;
-
-        // Update gradients with transform instead of direct background changes
-        requestAnimationFrame(() => {
+        if (showResults) {
+            // Find the highest vote count
+            const maxVotes = Math.max(poll1, poll2, poll3);
+            
+            // Update gradients based on highest vote count
             const options = [
-                { element: option1, percent: percent1 },
-                { element: option2, percent: percent2 },
-                { element: option3, percent: percent3 }
+                { element: option1, votes: poll1, max: maxVotes },
+                { element: option2, votes: poll2, max: maxVotes },
+                { element: option3, votes: poll3, max: maxVotes }
             ];
 
-            options.forEach(({ element, percent }) => {
-                element.style.setProperty('--gradient-stop', `${percent}%`);
+            requestAnimationFrame(() => {
+                options.forEach(({ element, votes, max }) => {
+                    const percent = votes === max ? 100 : (votes / max) * 100;
+                    element.style.setProperty('--gradient-stop', `${percent}%`);
+                });
             });
-        });
+        } else {
+            // Original gradient calculation
+            const percent1 = Math.round((poll1 / totalVotes) * 10000) / 100;
+            const percent2 = Math.round((poll2 / totalVotes) * 10000) / 100;
+            const percent3 = Math.round((poll3 / totalVotes) * 10000) / 100;
+
+            requestAnimationFrame(() => {
+                const options = [
+                    { element: option1, percent: percent1 },
+                    { element: option2, percent: percent2 },
+                    { element: option3, percent: percent3 }
+                ];
+
+                options.forEach(({ element, percent }) => {
+                    element.style.setProperty('--gradient-stop', `${percent}%`);
+                });
+            });
+        }
     }
 
     // Add click event listeners to buttons
@@ -98,6 +119,13 @@
         document.getElementById('option-3-count').textContent = poll3;
         const avatarRow = option3.querySelector('.voter-avatar-row');
         avatarRow.appendChild(createAvatar());
+        updateGradients();
+    });
+
+    // Add click event listener for toggle results button
+    toggleResultsButton.addEventListener('click', () => {
+        showResults = !showResults;
+        toggleResultsButton.textContent = showResults ? 'Show Percentages' : 'Show Results';
         updateGradients();
     });
 </script>
