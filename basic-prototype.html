@@ -1,0 +1,104 @@
+<html>
+
+<head>
+    <title>My Website</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+<div id="poll-container">
+    <div id="poll-question"></div>
+        <h1>What is your favorite color?</h1>
+    </div>
+    <div id="poll-options">
+        <button id="option-1">
+            <span>Red</span>
+            <div class="voter-avatar-row"></div>
+            <span id="option-1-count">0</span>
+        </button>
+        <button id="option-2">
+            <span>Blue</span>
+            <div class="voter-avatar-row"></div>
+            <span id="option-2-count">0</span>
+        </button>
+        <button id="option-3">
+            <span>Green</span>
+            <div class="voter-avatar-row"></div>
+            <span id="option-3-count">0</span>
+        </button>
+    </div>
+    <p>Thank you for voting!</p>
+</div>
+<script>
+    // Initialize vote counts
+    let poll1 = 0;
+    let poll2 = 0;
+    let poll3 = 0;
+    let totalVoters = 0;
+
+    // Get all poll buttons
+    const option1 = document.getElementById('option-1');
+    const option2 = document.getElementById('option-2');
+    const option3 = document.getElementById('option-3');
+
+    // Function to create a new avatar
+    function createAvatar() {
+        const avatar = document.createElement('div');
+        avatar.className = 'voter-avatar';
+        avatar.textContent = String.fromCharCode(65 + (totalVoters % 26)); // A, B, C, etc.
+        return avatar;
+    }
+
+    // Function to update button gradients based on vote counts
+    function updateGradients() {
+        const totalVotes = poll1 + poll2 + poll3;
+        if (totalVotes === 0) return;
+
+        // Calculate percentages with 2 decimal places for smoother transitions
+        const percent1 = Math.round((poll1 / totalVotes) * 10000) / 100;
+        const percent2 = Math.round((poll2 / totalVotes) * 10000) / 100;
+        const percent3 = Math.round((poll3 / totalVotes) * 10000) / 100;
+
+        // Update gradients with transform instead of direct background changes
+        requestAnimationFrame(() => {
+            const options = [
+                { element: option1, percent: percent1 },
+                { element: option2, percent: percent2 },
+                { element: option3, percent: percent3 }
+            ];
+
+            options.forEach(({ element, percent }) => {
+                element.style.setProperty('--gradient-stop', `${percent}%`);
+            });
+        });
+    }
+
+    // Add click event listeners to buttons
+    option1.addEventListener('click', () => {
+        poll1++;
+        totalVoters++;
+        document.getElementById('option-1-count').textContent = poll1;
+        const avatarRow = option1.querySelector('.voter-avatar-row');
+        avatarRow.appendChild(createAvatar());
+        updateGradients();
+    });
+
+    option2.addEventListener('click', () => {
+        poll2++;
+        totalVoters++;
+        document.getElementById('option-2-count').textContent = poll2;
+        const avatarRow = option2.querySelector('.voter-avatar-row');
+        avatarRow.appendChild(createAvatar());
+        updateGradients();
+    });
+
+    option3.addEventListener('click', () => {
+        poll3++;
+        totalVoters++;
+        document.getElementById('option-3-count').textContent = poll3;
+        const avatarRow = option3.querySelector('.voter-avatar-row');
+        avatarRow.appendChild(createAvatar());
+        updateGradients();
+    });
+</script>
+</html>
